@@ -1,7 +1,7 @@
 #include<unordered_set>
 #include<vector>
 #include<algorithm>
-#include<stdio.h>
+#include<iostream>
 
 using namespace std;
 
