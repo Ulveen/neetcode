@@ -9,9 +9,9 @@ using namespace std;
 class Solution {
     public:
     string encode(vector<string>& strs) {
-        string buffer = "";
+        string buffer;
         for (const string& s : strs) {
-            buffer += (s + "#" + to_string(s.length()));
+            buffer += s + '#' + to_string(s.size());
         }
         return buffer;
     }
