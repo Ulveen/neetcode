@@ -1,30 +1,26 @@
-#include<iostream>
-#include<vector>
-#include<malloc.h>
+#include <iostream>
+#include <vector>
 
 using namespace std;
 
 class Solution {
-    public:
+public:
     vector<int> productExceptSelf(vector<int>& nums) {
-        const size_t size = nums.size();
-        vector<int> a = {nums[0]}, b(size);
-
-        b[size - 1] = nums[size - 1];
-
-        for (int i = 1; i < size; i++) {
-            a.push_back(a[i - 1] * nums[i]);
-            b[size - i - 1] = b[size - i] * nums[size - i - 1];
+        int n = nums.size();
+        vector<int> result(n, 1);
+        
+        int prefix = 1;
+        for (int i = 0; i < n; ++i) {
+            result[i] = prefix;
+            prefix *= nums[i];
         }
-
-        vector<int> result = {b[1]};
-        for (int i = 1; i < size; i++) {
-            int e = a[i - 1];
-            if (i + 1 < size) {
-                e *= b[i + 1];
-            }
-            result.push_back(e);
+        
+        int suffix = 1;
+        for (int i = n - 1; i >= 0; --i) {
+            result[i] *= suffix;
+            suffix *= nums[i];
         }
+        
         return result;
     }
 };
