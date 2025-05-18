@@ -6,15 +6,17 @@ using namespace std;
 class Solution {
     public:
     bool isPalindrome(string s) {
-        string a;
-        for (char c : s) {
-            if (isalpha(c) || isdigit(c)) {
-                a += tolower(c);
-            }
-        }
-        int l = 0, r = a.length() - 1;
+        int l = 0, r = s.length() - 1;
         while (l < r) {
-            if (a[l++] != a[r--]) return false;
+            if (!isalnum(s[l])) {
+                l++;
+            }
+            if (!isalnum(s[r])) {
+                r--;
+            }
+            if (isalnum(s[l]) && isalnum(s[r])) {
+                if (tolower(s[l++]) != tolower(s[r--])) return false;
+            }
         }
         return true;
     }
