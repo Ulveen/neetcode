@@ -1,6 +1,5 @@
 #include<iostream>
 #include<vector>
-#include<set>
 #include<unordered_set>
 
 using namespace std;
@@ -8,22 +7,21 @@ using namespace std;
 class Solution {
     public:
     int longestConsecutive(vector<int>& nums) {
-        set<int> s(nums.begin(), nums.end());
-        int maxCount = 0, currCount = 0;
-        int prev = *s.begin();
+        unordered_set<int> s(nums.begin(), nums.end());
+        int maxCount = 0;
 
-        for (auto itr = s.begin(); itr != s.end(); itr++) {
-            if (*itr - prev != 1) {
-                maxCount = max(currCount, maxCount);
-                currCount = 1;
+        for (int num : s) {
+            if (s.find(num - 1) == s.end()) {
+                int currCount = 1;
+                int prev = num;
+                while(s.find(++prev) != s.end()) {
+                    currCount++;
+                }
+                maxCount = max(maxCount, currCount);
             }
-            else {
-                currCount++;
-            }
-            prev = *itr;
         }
 
-        return max(maxCount, currCount);
+        return maxCount;
     }
 };
 
