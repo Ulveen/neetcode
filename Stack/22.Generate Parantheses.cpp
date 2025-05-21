@@ -5,21 +5,21 @@ using namespace std;
 
 class Solution
 {
+vector<string> result;
 private:
-    void r(vector<string>& result, string curr, int open, int close) {
+    void r(string curr, int open, int close) {
         if (open == 0 && close == 0) {
-            result.push_back(curr);
+            this->result.push_back(curr);
             return;
         } 
-        if (open > 0) r(result, curr + "(", open - 1, close);
-        if (close > open) r(result, curr + ")", open, close - 1);
+        if (open > 0) r(curr + "(", open - 1, close);
+        if (close > open) r(curr + ")", open, close - 1);
     }
 public:
     vector<string> generateParenthesis(int n)
     {
-        vector<string> result;
-        r(result, "", n, n);
-        return result;
+        r("", n, n);
+        return this->result;
     }
 };
 
