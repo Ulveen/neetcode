@@ -16,18 +16,12 @@ public:
 
         for (int i = 0; i < len; i++)
         {
-            int curr = temperatures[i];
-            while (!st.empty() && temperatures[st.top()] < curr)
+            while (!st.empty() && temperatures[st.top()] < temperatures[i])
             {
                 result[st.top()] = i - st.top();
                 st.pop();
             }
             st.push(i);
-        }
-        while (!st.empty())
-        {
-            result[st.top()] = 0;
-            st.pop();
         }
         return result;
     }
