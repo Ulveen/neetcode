@@ -5,19 +5,28 @@
 using namespace std;
 
 class Solution {
-public: 
-    int largestRectangleArea(vector<int>& height) {
-        int maxHeight = 0, n = height.size();
+public:
+    int largestRectangleArea(vector<int>& heights) {
+        int maxArea = 0, n = heights.size();
+        stack<int> st;
+        st.push(-1);
 
         for (int i = 0; i < n; i++) {
-            int minHeight = height[i];
-            for (int j = i; j < n; j++) {
-                minHeight = min(minHeight, height[j]);
-                maxHeight = max(maxHeight, minHeight * (j - i + 1));
+            while (st.top() != -1 && heights[i] <= heights[st.top()]) {
+                int height = heights[st.top()]; st.pop();
+                int width = i - st.top() - 1;
+                maxArea = max(maxArea, height * width);
             }
+            st.push(i);
         }
 
-        return maxHeight;
+        while (st.top() != -1) {
+            int height = heights[st.top()]; st.pop();
+            int width = n - st.top() - 1;
+            maxArea = max(maxArea, height * width);
+        }
+
+        return maxArea;
     }
 };
 
