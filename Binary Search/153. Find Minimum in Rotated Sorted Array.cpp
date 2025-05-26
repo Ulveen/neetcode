@@ -42,13 +42,13 @@ int main()
 
 /*
 
-1. 1 2 3 4 5 -> left
+1. 1 2 3 4 5 -> mid > left && mid < right
 
-2. 5 1 2 3 4 -> left
+2. 5 1 2 3 4 -> mid < left && mid < right
 
-3. 3 4 5 1 2 -> right
+3. 3 4 5 1 2 -> mid > right && mid > left
 
-4. 2 3 4 5 1 -> right
+4. 2 3 4 5 1 -> mid > right && mid > left
 
 
 */
