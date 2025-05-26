@@ -7,56 +7,30 @@ using namespace std;
 class Solution
 {
 public:
-    int calcTime(vector<int>& piles, int speed, int n)
+    bool canFinish(vector<int> &piles, int speed, int h)
     {
-        if (speed == 0)
+        int time = 0;
+        for (int pile : piles)
         {
-            return INT_MAX;
-        }
-        int left = 0, right = n - 1, start = n;
-
-        while (left <= right)
-        {
-            int mid = (right + left) / 2;
-            if (piles[mid] > speed)
+            time += (pile + speed - 1) / speed;
+            if (time > h)
             {
-                if (mid < start)
-                {
-                    start = mid;
-                }
-                right = mid - 1;
-                continue;
+                return false;
             }
-            left = mid + 1;
         }
-
-        int time = start;
-
-        for (int i = start; i < n; i++)
-        {
-            time += (piles[i] + speed - 1) / speed;
-        }
-
-        return time;
-
+        return true;
     }
+
     int minEatingSpeed(vector<int> &piles, int h)
     {
-        int n = piles.size(), maxVal = *max_element(piles.begin(), piles.end());
-
-        if (h == n)
-        {
-            return maxVal;
-        }
-    
-        sort(piles.begin(), piles.end());
-        int left = 1, right = piles[n - 1], result = INT_MAX;
+        int maxVal = *max_element(piles.begin(), piles.end());
+        int left = 1, right = maxVal, result = maxVal;
 
         while (left <= right)
         {
             int mid = (right + left) / 2;
-            int time = calcTime(piles, mid, n);
-            if (time > h)
+            bool flag = canFinish(piles, mid, h);
+            if (!flag)
             {
                 left = mid + 1;
                 continue;
@@ -74,7 +48,7 @@ public:
 
 int main()
 {
-    vector<int> piles = {4,11,20,23,30};
+    vector<int> piles = {30,11,23,4,20};
     int h = 6;
     int result = Solution().minEatingSpeed(piles, h);
     cout << result;
