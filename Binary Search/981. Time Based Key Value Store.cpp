@@ -1,36 +1,48 @@
 #include <iostream>
 #include <vector>
 #include <unordered_map>
-#include <map>
 
 using namespace std;
 
 class TimeMap
 {
 public:
-    unordered_map<string, map<int, string>> tm;
+    unordered_map<string, vector<pair<int, string>>> tm;
     TimeMap()
     {
     }
 
     void set(string key, string value, int timestamp)
     {
-        tm[key][timestamp] = value;
+        tm[key].push_back({timestamp, value});
     }
 
     string get(string key, int timestamp)
     {
-        if (tm.find(key) == tm.end())
+        vector<pair<int, string>> &v = tm[key];
+        int left = 0, right = v.size() - 1;
+
+        string value = "";
+
+        while (left <= right)
         {
-            return "";
+            int mid = (left + right) / 2;
+            if (v[mid].first == timestamp)
+            {
+                return v[mid].second;
+            }
+            else if (v[mid].first < timestamp)
+            {
+                value = v[mid].second;
+                left = mid + 1;
+            }
+            else
+            {
+                right = mid - 1;
+            }
         }
-        map<int, string> &m = tm[key];
-        auto it = m.upper_bound(timestamp);
-        if (it != m.begin())
-        {
-            return (--it)->second;
-        }
-        return "";
+
+        return value;
     }
 };
 
@@ -62,11 +74,11 @@ int main()
             string result = timeMap.get(key, timestamp);
             if (result.length() == 0)
             {
-                printf("%s NOT FOUND\n", key.c_str());
+                printf("%s-%d NOT FOUND\n", key.c_str(), timestamp);
             }
             else
             {
-                printf("%s FOUND: %s-%d\n", key.c_str(), result.c_str(), timestamp);
+                printf("%s-%d FOUND: %s\n", key.c_str(), timestamp, result.c_str());
             }
         }
     }
