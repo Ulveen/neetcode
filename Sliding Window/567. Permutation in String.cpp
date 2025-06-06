@@ -13,26 +13,23 @@ public:
             return false;
         }
 
-        std::unordered_map<char, int> map1, map2;
+        int map1[26] = {0}, map2[26] = {0};
 
         for (int i = 0; i < n; i++)
         {
-            map1[s1[i]]++;
-            map2[s2[i]]++;
+            map1[s1[i] - 'a']++;
+            map2[s2[i] - 'a']++;
         }
 
-        for (int i = 0; i <= m - n; i++)
+        for (int i = 0; i < m - n; i++)
         {
-            if (map1 == map2)
+            if (std::memcmp(map1, map2, 26 * sizeof(int)) == 0)
                 return true;
-            if (map2[s2[i]] == 1)
-                map2.erase(s2[i]);
-            else
-                map2[s2[i]]--;
-            map2[s2[i + n]]++;
+            map2[s2[i] - 'a']--;
+            map2[s2[i + n] - 'a']++;
         }
 
-        return map1 == map2;
+        return std::memcmp(map1, map2, 26 * sizeof(int)) == 0;
     }
 };
 
