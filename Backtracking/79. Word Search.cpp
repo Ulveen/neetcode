@@ -5,49 +5,52 @@ using namespace std;
 
 class Solution {
 private:
-  bool result;
-  int dirs[4][2] = {{0, 1}, {1, 0}, {-1, 0}, {0, -1}};
+  int rows, cols;
 
-  void backtrack(vector<vector<char>> &board, string word, int idx, int lastY,
-                 int lastX) {
-    if (result) {
-      return;
-    }
-    if (idx >= word.size()) {
-      result = true;
-      return;
-    }
-    if (idx == 0) {
-      for (int i = 0; i < board.size(); i++) {
-        for (int j = 0; j < board[0].size(); j++) {
-          if (board[i][j] == word[idx]) {
-            board[i][j] = '.';
-            backtrack(board, word, idx + 1, i, j);
-            board[i][j] = word[idx];
-          }
-        }
-      }
-    } else {
-      for (int i = 0; i < 4; i++) {
-        int newY = lastY + dirs[i][0];
-        int newX = lastX + dirs[i][1];
+  bool backtrack(vector<vector<char>> &board, string word, int idx, int y,
+                 int x) {
 
-        if (newY < 0 || newX < 0 || newY >= board.size() ||
-            newX >= board[0].size() || word[idx] != board[newY][newX]) {
-          continue;
-        }
-        board[newY][newX] = '.';
-        backtrack(board, word, idx + 1, newY, newX);
-        board[newY][newX] = word[idx];
-      }
+    if (idx == word.size()) {
+      return true;
     }
+
+    if (y < 0 || x < 0 || y >= rows || x >= cols || board[y][x] == '.' ||
+        board[y][x] != word[idx]) {
+      return false;
+    }
+
+    board[y][x] = '.';
+
+    bool result = backtrack(board, word, idx + 1, y + 1, x) ||
+                  backtrack(board, word, idx + 1, y, x + 1) ||
+                  backtrack(board, word, idx + 1, y - 1, x) ||
+                  backtrack(board, word, idx + 1, y, x - 1);
+
+    board[y][x] = word[idx];
+
+    return result;
   }
 
 public:
   bool exist(vector<vector<char>> board, string word) {
-    result = false;
-    backtrack(board, word, 0, -1, -1);
-    return result;
+    if (word.empty()) {
+      return true;
+    }
+
+    rows = board.size();
+    cols = board[0].size();
+
+    for (int i = 0; i < rows; i++) {
+      for (int j = 0; j < cols; j++) {
+        if (word[0] == board[i][j]) {
+          if (backtrack(board, word, 0, i, j)) {
+            return true;
+          }
+        }
+      }
+    }
+
+    return false;
   }
 };
 
