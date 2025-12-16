@@ -20,11 +20,6 @@ public:
       dp[i] = max(dp[i - 1], dp[i - 2] + nums[i]);
     }
 
-    for (int num : nums) {
-      printf("%d ", num);
-    }
-    puts("");
-
     return max(dp[n - 1], dp[n - 2]);
   }
 };
