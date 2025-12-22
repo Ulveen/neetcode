@@ -54,28 +54,30 @@ void visualize(Node *node) {
 }
 
 class Solution {
-private:
-  unordered_map<int, Node *> mapping;
-  void bfs(Node *curr) {
-    if (mapping.find(curr->val) != mapping.end()) {
-      return;
-    }
-    mapping[curr->val] = new Node(curr->val);
-    for (Node *neighbor : curr->neighbors) {
-      if (mapping.find(neighbor->val) == mapping.end()) {
-        bfs(neighbor);
-      }
-      mapping[curr->val]->neighbors.push_back(mapping[neighbor->val]);
-    }
-  }
-
 public:
   Node *cloneGraph(Node *adjList) {
     if (!adjList) {
       return nullptr;
     }
-    bfs(adjList);
-    return mapping[adjList->val];
+    unordered_map<Node *, Node *> mapping;
+    queue<Node *> q;
+    q.push(adjList);
+    mapping[adjList] = new Node(adjList->val);
+
+    while (!q.empty()) {
+      Node *curr = q.front();
+      q.pop();
+
+      for (Node *neighbor : curr->neighbors) {
+        if (mapping.find(neighbor) == mapping.end()) {
+          q.push(neighbor);
+          mapping[neighbor] = new Node(neighbor->val);
+        }
+        mapping[curr]->neighbors.push_back(mapping[neighbor]);
+      }
+    }
+
+    return mapping[adjList];
   }
 };
 
