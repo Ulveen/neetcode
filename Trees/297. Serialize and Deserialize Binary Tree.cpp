@@ -1,75 +1,161 @@
-#include <climits>
 #include <iostream>
-#include <string>
+#include <queue>
+#include <stack>
+#include <unordered_map>
 #include <vector>
 
 using namespace std;
 
 struct TreeNode {
   int val;
-  TreeNode *left;
-  TreeNode *right;
-  TreeNode(int x) : val(x), left(NULL), right(NULL) {}
+  TreeNode *left, *right;
+
+  TreeNode(int _val) : val(_val), left(nullptr), right(nullptr) {}
 };
 
 class Codec {
-  string result = "";
-  int nullCount = 0;
-
 private:
-  void inorder(TreeNode *root) {
-    if (!root) {
-      nullCount++;
+  void serializeHelper(string &result, TreeNode *node) {
+    if (result.length() > 0) {
+      result += ';';
+    }
+    if (!node) {
+      result += 'n';
       return;
     }
+    result += to_string(node->val);
+    serializeHelper(result, node->left);
+    serializeHelper(result, node->right);
   }
 
 public:
-  // Encodes a tree to a single string.
   string serialize(TreeNode *root) {
-    if (!root) {
-      return result;
-    }
-    inorder(root);
+    string result = "";
+    serializeHelper(result, root);
     return result;
   }
 
-  // Decodes your encoded data to tree.
-  TreeNode *deserialize(string data) { return nullptr; }
+  TreeNode *deserialize(string data) {
+    TreeNode *root = nullptr;
+
+    if (data.empty()) {
+      return root;
+    }
+
+    stack<TreeNode *> st;
+    string buffer = "";
+    int nullCounter = 0;
+
+    for (int i = 0; i < data.length(); i++) {
+      if (data[i] != ';') {
+        buffer += data[i];
+        continue;
+      }
+
+      if (buffer[0] == 'n') {
+        if (nullCounter == 1 || st.top() && st.top()->left) {
+          nullCounter = 0;
+          st.pop();
+        } else {
+          nullCounter++;
+        }
+      } else {
+        int num = stoi(buffer);
+        TreeNode *newNode = new TreeNode(num);
+        if (!root) {
+          root = newNode;
+        } else if (nullCounter == 1 || st.top()->left) {
+          st.top()->right = newNode;
+          st.pop();
+        } else if (nullCounter == 0) {
+          st.top()->left = newNode;
+        }
+        nullCounter = 0;
+        st.push(newNode);
+      }
+      buffer.clear();
+    }
+
+    return root;
+  }
 };
 
-const int NULL_NODE = INT_MIN;
+const int EMPTY = -1001;
 
-TreeNode *buildBST(vector<int> &values, int idx) {
-  if (idx >= values.size() || values[idx] == NULL_NODE) {
-    return nullptr;
+void buildHelper(vector<int> &nums, vector<TreeNode *> &nodes, int idx) {
+  if (idx >= nums.size())
+    return;
+
+  vector<TreeNode *> newNodes;
+  int limit = nodes.size() * 2;
+
+  for (int i = idx; i < nums.size(); i++) {
+    int temp = i - idx;
+    if (temp >= limit) {
+      break;
+    }
+    if (nums[i] == EMPTY) {
+      continue;
+    }
+    TreeNode *newNode = new TreeNode(nums[i]);
+    TreeNode *parent = nodes[temp / 2];
+    if (temp % 2 == 0) {
+      parent->left = newNode;
+    } else {
+      parent->right = newNode;
+    }
+    newNodes.push_back(newNode);
   }
-  TreeNode *node = new TreeNode(values[idx]);
-  node->left = buildBST(values, idx * 2 + 1);
-  node->right = buildBST(values, idx * 2 + 2);
 
-  return node;
+  buildHelper(nums, newNodes, idx + limit);
 }
 
-void preorder(TreeNode *node) {
-  if (!node)
+TreeNode *buildTreeFromBFS(vector<int> &nums) {
+  if (nums.size() == 0) {
+    return nullptr;
+  }
+
+  TreeNode *root = new TreeNode(nums[0]);
+  vector<TreeNode *> temp = {root};
+  buildHelper(nums, temp, 1);
+  return root;
+}
+
+void preorder(TreeNode *root) {
+  if (!root) {
     return;
-  preorder(node->left);
-  cout << node->val << " ";
-  preorder(node->right);
+  }
+  queue<TreeNode *> q;
+  q.push(root);
+
+  while (!q.empty()) {
+    TreeNode *curr = q.front();
+    q.pop();
+
+    cout << curr->val << " ";
+    if (curr->left) {
+      q.push(curr->left);
+    }
+    if (curr->right) {
+      q.push(curr->right);
+    }
+  }
+
+  cout << endl;
 }
 
 int main() {
-  vector<int> values = {1, 2, 3, NULL_NODE, NULL_NODE, 4, 5};
-  TreeNode *root = buildBST(values, 0);
+  vector<int> nums = {3, 2, 4, 3};
+  TreeNode *root = buildTreeFromBFS(nums);
+  cout << "Original: ";
+  preorder(root);
 
-  Codec codec = Codec();
-  string serialized = codec.serialize(root);
+  Codec c = Codec();
 
-  cout << serialized << endl;
+  string data = c.serialize(root);
+  cout << "Serialized: " << data << endl;
 
-  TreeNode *deserialized = codec.deserialize(serialized);
-
-  preorder(deserialized);
-  cout << endl;
+  TreeNode *result = c.deserialize(data);
+  cout << "Deserialize: ";
+  preorder(result);
 }
