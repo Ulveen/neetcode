@@ -13,48 +13,52 @@ public:
   void solve(vector<vector<char>> &board) {
     int rows = board.size();
     int cols = board[0].size();
-    vector<vector<bool>> visited(rows, vector<bool>(cols, false));
+    vector<vector<bool>> isValid(rows, vector<bool>(cols, true));
+    queue<pair<int, int>> q;
 
-    for (int i = 1; i < rows - 1; i++) {
-      for (int j = 1; j < cols - 1; j++) {
-        if (board[i][j] == 'X' || visited[i][j]) {
+    for (int i = 0; i < rows; i++) {
+      if (board[i][0] == 'O') {
+        q.push({i, 0});
+        isValid[i][0] = false;
+      }
+      if (board[i][cols - 1] == 'O') {
+        q.push({i, cols - 1});
+        isValid[i][cols - 1] = false;
+      }
+    }
+
+    for (int i = 0; i < cols; i++) {
+      if (board[0][i] == 'O') {
+        q.push({0, i});
+        isValid[0][i] = false;
+      }
+      if (board[rows - 1][i] == 'O') {
+        q.push({rows - 1, i});
+        isValid[rows - 1][i] = false;
+      }
+    }
+
+    while (!q.empty()) {
+      auto [y, x] = q.front();
+      q.pop();
+
+      for (int i = 0; i < 4; i++) {
+        int ny = y + moveY[i];
+        int nx = x + moveX[i];
+
+        if (ny < 0 || nx < 0 || ny >= rows || nx >= cols ||
+            board[ny][nx] == 'X' || !isValid[ny][nx]) {
           continue;
-        } else {
-          bool isValid = true;
-          queue<pair<int, int>> q;
-          vector<pair<int, int>> v;
+        }
+        q.push({ny, nx});
+        isValid[ny][nx] = false;
+      }
+    }
 
-          q.push({i, j});
-          v.push_back({i, j});
-
-          while (!q.empty()) {
-            auto [y, x] = q.front();
-            q.pop();
-
-            for (int i = 0; i < 4; i++) {
-              int ny = y + moveY[i];
-              int nx = x + moveX[i];
-
-              if (ny < 0 || nx < 0 || ny >= rows || nx >= cols ||
-                  board[ny][nx] == 'X' || visited[ny][nx]) {
-                continue;
-              }
-
-              if (ny == 0 || nx == 0 || ny == rows - 1 || nx == cols - 1) {
-                isValid = false;
-              }
-
-              visited[ny][nx] = true;
-              q.push({ny, nx});
-              v.push_back({ny, nx});
-            }
-          }
-
-          if (isValid) {
-            for (auto [y, x] : v) {
-              board[y][x] = 'X';
-            }
-          }
+    for (int i = 0; i < rows; i++) {
+      for (int j = 0; j < cols; j++) {
+        if (isValid[i][j] && board[i][j] == 'O') {
+          board[i][j] = 'X';
         }
       }
     }
