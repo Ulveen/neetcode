@@ -1,6 +1,5 @@
 #include <iostream>
 #include <numeric>
-#include <unordered_set>
 #include <vector>
 
 using namespace std;
@@ -17,6 +16,7 @@ private:
 
 public:
   int countComponents(int n, vector<vector<int>> &edges) {
+    int result = n;
     vector<int> parent(n);
     iota(parent.begin(), parent.end(), 0);
 
@@ -24,17 +24,9 @@ public:
       int parentA = getParent(parent, edges[i][0]);
       int parentB = getParent(parent, edges[i][1]);
 
-      parent[parentB] = parentA;
-    }
-
-    int result = 0;
-    unordered_set<int> seen;
-
-    for (int p : parent) {
-      int temp = getParent(parent, p);
-      if (seen.find(temp) == seen.end()) {
-        seen.emplace(temp);
-        result++;
+      if (parentA != parentB) {
+        parent[parentB] = parentA;
+        result--;
       }
     }
 
