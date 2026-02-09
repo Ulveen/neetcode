@@ -9,9 +9,7 @@ public:
         int n = s1.length(), m = s2.length();
 
         if (m < n)
-        {
             return false;
-        }
 
         int map1[26] = {0}, map2[26] = {0};
 
