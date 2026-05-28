@@ -9,35 +9,35 @@ class Solution
 public:
     int networkDelayTime(vector<vector<int>> &times, int n, int k)
     {
+        k--;
         vector<vector<pair<int, int>>> list(n);
-        for (auto time : times)
-        {
-            list[time[0] - 1].emplace_back(time[1] - 1, time[2]);
-        }
-        auto cmp = [](pair<int, int> &a, pair<int, int> &b)
-        {
-            return a.second > b.second;
-        };
-        priority_queue<pair<int, int>, vector<pair<int, int>>, decltype(cmp)> pq(cmp);
         vector<int> dist(n, INT_MAX);
 
-        for (auto &it : list[k - 1])
-        {
-            dist[it.first] = it.second;
-            pq.emplace(it.first, it.second);
+        auto cmp = [&](int a, int b) { 
+            return dist[a] > dist[b];
+        };
+        priority_queue<int, vector<int>, decltype(cmp)> pq(cmp);
+
+        for (auto& time : times) {
+            if (time[0] - 1 == k) {
+                dist[time[1] - 1] = time[2];
+                pq.push(time[1] - 1);
+            }
+            else {
+                list[time[0] - 1].emplace_back(time[1] - 1, time[2]);
+            }
         }
 
         while (!pq.empty())
         {
-            auto [idx, time] = pq.top();
-            pq.pop();
+            int idx = pq.top(); pq.pop();
             for (auto &it : list[idx])
             {
-                int newTime = time + it.second;
+                int newTime = dist[idx] + it.second;
                 if (newTime < dist[it.first])
                 {
                     dist[it.first] = newTime;
-                    pq.emplace(it.first, newTime);
+                    pq.push(it.first);
                 }
             }
         }
@@ -45,13 +45,14 @@ public:
         int result = INT_MIN;
         for (int i = 0; i < n; i++)
         {
-            if (i == k - 1) continue;
+            if (i == k) continue;
             if (dist[i] == INT_MAX) return -1;
             result = max(result, dist[i]);
         }
         return result;
     }
 };
+
 
 int main()
 {
