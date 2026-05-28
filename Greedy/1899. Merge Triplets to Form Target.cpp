@@ -8,25 +8,18 @@ class Solution
 public:
     bool mergeTriplets(vector<vector<int>> &triplets, vector<int> &target)
     {
-        vector<bool> same(3, false);
-        bool candidate = false;
-        for (vector<int>& t : triplets)
+        bool check[3] = { false };
+        for (auto& t : triplets)
         {
-            vector<bool> flags(3, false); 
-            bool valid = true;
-            for (int i = 0; i < 3; i++)
-            {
-                if (t[i] > target[i]) valid = false;
-                else if (t[i] == target[i]) flags[i] = true;
-            }
-            if (valid){
-                for (int i = 0; i < 3; i++) {
-                    same[i] = same[i] || flags[i];
-                }
-                candidate = true;
-            }
+            if (t[0] > target[0] || t[1] > target[1] || t[2] > target[2]) continue;
+
+            if (!check[0]) check[0] = t[0] == target[0];
+            if (!check[1]) check[1] = t[1] == target[1];
+            if (!check[2]) check[2] = t[2] == target[2];
+
+            if (check[0] && check[1] && check[2]) return true;
         }
-        return same[0] && same[1] && same[2] && candidate;
+        return false;
     }
 };
 
