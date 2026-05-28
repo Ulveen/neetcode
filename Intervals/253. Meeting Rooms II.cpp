@@ -1,7 +1,7 @@
 #include <iostream>
 #include <vector>
 #include <algorithm>
-#include <array>
+#include <queue>
 
 using namespace std;
 
@@ -24,23 +24,21 @@ public:
         sort(intervals.begin(), intervals.end(), [](Interval& a, Interval& b) {
             return a.start < b.start;
         });
-        vector<array<int, 2>> rooms;
+
+        priority_queue<int, vector<int>, greater<int>> endTimes;
 
         for (int i = 0; i < intervals.size(); i++) {
-            bool flag = false;
-            for (int j = 0; j < rooms.size(); j++) {
-                if (rooms[j][1] <= intervals[i].start) {
-                    rooms[j][1] = max(rooms[j][1], intervals[i].end);
-                    flag = true;
-                    break;
-                }
+            if (endTimes.empty() || endTimes.top() > intervals[i].start) {
+                endTimes.push(intervals[i].end);
             }
-            if (!flag) {
-                rooms.push_back({intervals[i].start, intervals[i].end});
+            else {
+                int endTime = max(endTimes.top(), intervals[i].end);
+                endTimes.pop();
+                endTimes.push(endTime);
             }
         }
 
-        return rooms.size();
+        return endTimes.size();
     }
 };
 
