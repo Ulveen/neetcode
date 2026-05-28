@@ -21,13 +21,11 @@ public:
         sort(intervals.begin(), intervals.end(), [](Interval& a, Interval& b) {
             return a.start < b.start;
         });
-        Interval &prev = intervals[0];
         for (int i = 1; i < intervals.size(); i++)
         {
-            if (intervals[i].start < prev.end) {
+            if (intervals[i].start < intervals[i - 1].end) {
                 return false;
             }
-            prev = intervals[i];
         }
         return true;
     }
